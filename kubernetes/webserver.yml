@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-webserver
+  labels:
+    app: webserver
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webserver
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 50%
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      serviceAccountName: airflow
+      containers:
+        - name: webserver-pod
+          image: your-registry/airflow #CHANGE HERE, use your docker image built on the previous step
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 0.25
+            limits:
+              memory: 2Gi
+          imagePullPolicy: Always
+          command: ["/bin/sh", "-c"]
+          args:
+            - echo "Starting - airflow webserver";
+              airflow webserver;
+          envFrom:
+            - configMapRef:
+                name: airflow-variables
+          env:
+            - name: AIRFLOW__KUBERNETES__ENV_FROM_CONFIGMAP_REF
+              value: airflow-variables
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-webserver
+  labels:
+    app: webserver
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: webserver

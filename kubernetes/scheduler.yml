@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-scheduler
+  labels:
+    app: scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 50%
+  template:
+    metadata:
+      labels:
+        app: scheduler
+    spec:
+      serviceAccountName: airflow
+      containers:
+        - name: scheduler-pod
+          image: your-registry/airflow #CHANGE HERE, use your docker image built on the previous step
+          resources:
+            requests:
+              cpu: 0.5
+            limits:
+              cpu: 1
+          imagePullPolicy: Always
+          command: ["/bin/sh", "-c"]
+          args:
+            - echo "Executing - airflow initdb";
+              airflow initdb;
+              echo "Starting - airflow scheduler";
+              airflow scheduler;
+          envFrom:
+            - configMapRef:
+                name: airflow-variables
+          env:
+            - name: AIRFLOW__KUBERNETES__ENV_FROM_CONFIGMAP_REF
+              value: airflow-variables
