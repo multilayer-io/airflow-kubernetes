@@ -2,46 +2,40 @@
 
 Simple Apache Airflow solution using [Kubernetes Executor][1].There are many repositories to a deployment solution with custom helm charts, but in this repo I am only going to use a few yaml files. 
 
-I am going to guide you trough all the steps to get it running on the top three cloud providers:
+I am going to guide you trough all the steps to get it running on Google Cloud Platform (GCP). 
 
-- GCP  
-- AWS (coming soon)
-- AKS (coming soon)
-
-Note: This repository does not contain any information about setting up a Kubernetes cluster, and a MySQL or PostgreSQL database. We are using PostgreSQL but you can easily switch it to MySQL.
+Note: This repository does not contain any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database.
 
 ## prerequisite
 
-- Kubernetes cluster
-- MySQL or PostgreSQL database
+- [Kubernetes cluster][2]: use preemptible instance to reduce costs. Build a cluster with at least 2 vCPU and 4GB RAM in total.
+- [Kubectl][6]
+- [MySQL or PostgreSQL database][3]
+- [Bucket to store logs][4]
 - Container registry 
 
 ## Let's get started
 
-- Clone this repository
-- Build your docker image
+- Build and push your Airflow docker image
 - Create a Kubernetes ConfigMap to store all the environment variables
-- Start Airflow scheduler and webserver
+- Deploy Airflow scheduler and webserver
+- Connect to Airflow's webserver UI
 
-Note: the current content is generic, it should work in any kubernetes cluster. I will soon add the log configuration which will be cloud provider specific.
 
 ### Build your docker image
 
 Notice that in this example the dags are part of the docker images, therefore you will have to re-deploy your deployment/pods during DAG updates.
 
-Create your own container registry:
+Push your image to Google's container registry:
 
-- [Google container registry][2]
-- [Amazon container registry][3]
-- [Microsoft container registry][4]
+- [Google container registry instructions][5]
+
+In my case, I am pushing to the european container registry `eu.gcr.io`:
 
 ```
-docker build -t your-registry/airflow .
-docker push your-registry/airflow
+docker build -t eu.gcr.io/GCP_PROJECT_ID/airflow:latest .
+docker push eu.gcr.io/GCP_PROJECT_ID/airflow:latest
 ```
-
-
-Note: if you want to reduce build time everytime you update your dags, I recommend that you split your docker file into two images, using the base image as source of the second image (do it later keep going!).
 
 ### Create a Kubernetes ConfigMap to store all the environment variables
 
@@ -49,11 +43,10 @@ Please read the comments inside [kubernetes/variables.yml](kubernetes/variables.
 
 ```
 kubectl apply -f kubernetes/variables.yml
+kubectl get configmap
 ```
 
-### Start Airflow scheduler and webserver
-
-Make sure you have a cluster with at least 2vCPU/4GB-RAM.
+### Deploy Airflow scheduler and webserver
 
 Please read the comments inside [kubernetes/scheduler.yml](kubernetes/scheduler.yml) and [kubernetes/webserver.yml](kubernetes/webserver.yml), and apply the required changes before executing the following command:
 
@@ -61,24 +54,30 @@ Please read the comments inside [kubernetes/scheduler.yml](kubernetes/scheduler.
 kubectl apply -f kubernetes/
 ```
 
-### Check it out!
+Check if there are pods running: `kubectl get pods`
+
+### Connect to Airflow's webserver UI
 
 ```
-kubectl get pods 
 kubectl port-forward service/airflow-webserver 8080:8080
-open open http://localhost:8080
+open http://localhost:8080
 ```
 
-### Updating kubernetes config and re-deploying scheduler/webserver
+### Update DAGS, kubernetes config files and re-deploying scheduler/webserver
+
+The bellow script will rebuild your docker image, push it, update your kubernetes config files, and re-deploy Airflow's scheduler and webserver.
 
 ```
+docker build -t eu.gcr.io/GCP_PROJECT_ID/airflow:latest .
+docker push eu.gcr.io/GCP_PROJECT_ID/airflow:latest
 kubectl apply -f kubernetes/
 kubectl rollout restart deployment/airflow-scheduler
 kubectl rollout restart deployment/airflow-webserver
 ```
 
-
 [1]: https://airflow.apache.org/docs/stable/executor/kubernetes.html "Kubernetes Executor"
-[2]: https://cloud.google.com/container-registry "Google container registry"
-[3]: https://aws.amazon.com/ecr/ "Amazon container registry"
-[4]: https://azure.microsoft.com/nl-nl/services/container-registry/ "Azure container registry"
+[2]: https://cloud.google.com/kubernetes-engine "GKE"
+[3]: https://cloud.google.com/sql/docs "SQL"
+[4]: https://cloud.google.com/storage "Storage"
+[5]: https://cloud.google.com/container-registry/docs/pushing-and-pulling?hl=en_US "Google container registry"
+[6]: https://kubernetes.io/docs/tasks/tools/install-kubectl/ "kubectl"

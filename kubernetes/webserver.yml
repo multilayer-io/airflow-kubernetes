@@ -22,7 +22,7 @@ spec:
       serviceAccountName: airflow
       containers:
         - name: webserver-pod
-          image: your-registry/airflow #CHANGE HERE, use your docker image built on the previous step
+          image: eu.gcr.io/GCP_PROJECT_ID/airflow:latest #CHANGE HERE, use your docker image built on the previous step
           resources:
             requests:
               memory: 1Gi

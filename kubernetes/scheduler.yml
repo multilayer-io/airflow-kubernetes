@@ -22,17 +22,17 @@ spec:
       serviceAccountName: airflow
       containers:
         - name: scheduler-pod
-          image: your-registry/airflow #CHANGE HERE, use your docker image built on the previous step
+          image: eu.gcr.io/GCP_PROJECT_ID/airflow:latest #CHANGE HERE, use your docker image built on the previous step
           resources:
             requests:
-              cpu: 0.5
-            limits:
-              cpu: 1
+              cpu: 0.75
           imagePullPolicy: Always
           command: ["/bin/sh", "-c"]
           args:
             - echo "Executing - airflow initdb";
               airflow initdb;
+              echo "Creating - airflow connections";
+              airflow connections -a --conn_id google_cloud_default --conn_type google_cloud_platform;
               echo "Starting - airflow scheduler";
               airflow scheduler;
           envFrom:

@@ -5,15 +5,18 @@ metadata:
   namespace: default
 data:
     AIRFLOW__CORE__EXECUTOR: KubernetesExecutor
-    AIRFLOW__CORE__FERNET_KEY: B7SgOjI91jhcqQ1HIc0L6BXnOR2T0xv8DAtlc6W5bI0= #CHANGE HERE, generate your own key: https://airflow.readthedocs.io/en/stable/howto/secure-connections.html
-    AIRFLOW__CORE__LOAD_EXAMPLES: "True"
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql://user:password@host/dbname #CHANGE HERE, use your owm database credentials, we do not recommend using this for production... it is better to use kubernetes secrets
+    AIRFLOW__CORE__FERNET_KEY: B7SgOjI91jhcqQ1HIc0L6BXnOR2T0xv8DAtlc6W5bI0= #CHANGE HERE: generate your own key, check this out: https://airflow.readthedocs.io/en/stable/howto/secure-connections.html
+    AIRFLOW__CORE__LOAD_EXAMPLES: "False" # CHANGE HERE: if you want to load DAG examples
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql://user:password@host/dbname #CHANGE HERE: database credentials, we do not recommend to store your credentials in this file for production environments... Instead use Kubernetes sercrets!
     AIRFLOW__KUBERNETES__DAGS_IN_IMAGE: "True"
     AIRFLOW__KUBERNETES__DELETE_WORKER_PODS: "True"
     AIRFLOW__KUBERNETES__ENV_FROM_CONFIGMAP_REF: airflow-variables
     AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS: ""
-    AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: your-registry/airflow #CHANGE HERE, use your docker image built on the previous step
-    AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: latest #CHANGE HERE
+    AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: eu.gcr.io/GCP_PROJECT_ID/airflow:latest #CHANGE HERE: image built before
+    AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: latest #CHANGE HERE: your image tag
     AIRFLOW__KUBERNETES__WORKER_PODS_CREATION_BATCH_SIZE: "10"
     AIRFLOW__KUBERNETES__WORKER_SERVICE_ACCOUNT_NAME: airflow
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "True"
+    AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: "gs://YOUR_STORAGE_BUCKET_NAME/" # CHANGE HERE: bucket created before
+    AIRFLOW__CORE__REMOTE_LOG_CONN_ID: "google_cloud_default"
+    AIRFLOW__CORE__REMOTE_LOGGING: "True"
