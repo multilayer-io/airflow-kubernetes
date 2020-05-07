@@ -2,9 +2,9 @@
 
 Simple Apache Airflow solution using [Kubernetes Executor][1]. There are many repositories to a deployment solution with custom helm charts, but in this repo I am only going to use a few yaml files. 
 
-This guide is Google Cloud Platform (GCP) as a cloud provider, feel free to open a PR for other cloud providers. 
+This guide is using Google Cloud Platform (GCP) as a cloud provider. Do not hesitate to open a PR to implemente a guide for other cloud providers. 
 
-Note: we do not provide any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database.
+Note: we do not provide any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database. Reach us if you need help!
 
 ## prerequisite
 
@@ -69,7 +69,7 @@ open http://localhost:8080
 
 ### Update DAGS, kubernetes config files and re-deploying scheduler/webserver
 
-The bellow script will rebuild your docker image, push it, update your kubernetes config files, and re-deploy Airflow's scheduler and webserver.
+The bellow script will rebuild your docker image, push it, update your kubernetes config files, and re-deploy Airflow's scheduler and webserver pods.
 
 ```
 docker build -t eu.gcr.io/GCP_PROJECT_ID/airflow:latest .
