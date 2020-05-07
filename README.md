@@ -1,18 +1,21 @@
 # airflow-kubernetes
 
-Simple Apache Airflow solution using [Kubernetes Executor][1].There are many repositories to a deployment solution with custom helm charts, but in this repo I am only going to use a few yaml files. 
+Simple Apache Airflow solution using [Kubernetes Executor][1]. There are many repositories to a deployment solution with custom helm charts, but in this repo I am only going to use a few yaml files. 
 
-I am going to guide you trough all the steps to get it running on Google Cloud Platform (GCP). 
+This guide is Google Cloud Platform (GCP) as a cloud provider, feel free to open a PR for other cloud providers. 
 
-Note: This repository does not contain any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database.
+Note: we do not provide any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database.
 
 ## prerequisite
 
-- [Kubernetes cluster][2]: use preemptible instance to reduce costs. Build a cluster with at least 2 vCPU and 4GB RAM in total.
-- [Kubectl][6]
-- [MySQL or PostgreSQL database][3]
+- [Kubernetes cluster][2]
+ 
+ Use preemptible instance to reduce costs. Set the read/write permissions for Cloud Storage and SQL API service. Build a cluster with at least 2 vCPU and 4GB RAM in total.
+- [Install kubectl in your computer][6]
+- [Create a PostgreSQL or MySQL database][3]
+
+Authorized traffic from your node instances. If you are using a public database and instances, authorized network 0.0.0.0/0
 - [Bucket to store logs][4]
-- Container registry 
 
 ## Let's get started
 
@@ -22,20 +25,21 @@ Note: This repository does not contain any information about setting up a Kubern
 - Connect to Airflow's webserver UI
 
 
-### Build your docker image
+### Build and push your Airflow docker image
 
-Notice that in this example the dags are part of the docker images, therefore you will have to re-deploy your deployment/pods during DAG updates.
+Note: The dags are part of the docker images. You will have to re-build your docker image, and re-deploy your pods after DAG updates.
 
 Push your image to Google's container registry:
 
 - [Google container registry instructions][5]
 
-In my case, I am pushing to the european container registry `eu.gcr.io`:
+In my case, I am using to Google's european container registry `eu.gcr.io`:
 
 ```
 docker build -t eu.gcr.io/GCP_PROJECT_ID/airflow:latest .
 docker push eu.gcr.io/GCP_PROJECT_ID/airflow:latest
 ```
+Note: you don't need to create anything, just push the image to your GCP project.
 
 ### Create a Kubernetes ConfigMap to store all the environment variables
 
