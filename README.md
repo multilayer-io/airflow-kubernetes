@@ -4,17 +4,17 @@ Simple Apache Airflow `1.10.9` solution using [Kubernetes Executor][1]. There ar
 
 This guide is using Google Cloud Platform (GCP) as a cloud provider. Do not hesitate to open a PR to implemente a guide for other cloud providers. 
 
-Note: we do not provide any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database. Reach us if you need help!
+Note: we do not provide any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database. Reach out if you need help!
 
 ## prerequisite
 
 - [Kubernetes cluster][2]
  
- Use preemptible instance to reduce costs. Set the read/write permissions for Cloud Storage and SQL API service. Build a cluster with at least 2 vCPU and 4GB RAM in total.
+ Use preemptible instance to reduce costs. Set the read/write permissions for Cloud Storage and Cloud SQL API services. Build a cluster with at least 2 vCPU and 4GB RAM in total.
 - [Install kubectl in your computer][6]
 - [Create a PostgreSQL or MySQL database][3]
 
-Authorized traffic from your node instances. If you are using a public database and instances, authorized network 0.0.0.0/0
+Authorized traffic from your node instances. If you are using public instances, authorized the network 0.0.0.0/0
 - [Bucket to store logs][4]
 
 ## Let's get started
@@ -64,8 +64,10 @@ Check if there are pods running: `kubectl get pods`
 
 ```
 kubectl port-forward service/airflow-webserver 8080:8080
-open http://localhost:8080
 ```
+
+Open http://localhost:8080 in your favourite browser.
+
 
 ### Update DAGS, kubernetes config files and re-deploying scheduler/webserver
 
@@ -78,6 +80,8 @@ kubectl apply -f kubernetes/
 kubectl rollout restart deployment/airflow-scheduler
 kubectl rollout restart deployment/airflow-webserver
 ```
+
+I hope that this repository helped you to get started :)
 
 [1]: https://airflow.apache.org/docs/stable/executor/kubernetes.html "Kubernetes Executor"
 [2]: https://cloud.google.com/kubernetes-engine "GKE"
