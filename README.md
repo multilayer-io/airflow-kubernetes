@@ -25,9 +25,9 @@ Authorized traffic from your node instances. If you are using public instances, 
 - Connect to Airflow's webserver UI
 
 
-### Build and push your Airflow docker image
+### Build and push your Airflow Docker image
 
-Note: The dags are part of the docker images. You will have to re-build your docker image, and re-deploy your pods after DAG updates.
+Note: The DAGs are part of the Docker images. You will have to re-build your Docker image, and re-deploy your pods after DAG updates.
 
 Push your image to Google's container registry:
 
@@ -39,7 +39,7 @@ In my case, I am using to Google's european container registry `eu.gcr.io`:
 docker build -t eu.gcr.io/GCP_PROJECT_ID/airflow:latest .
 docker push eu.gcr.io/GCP_PROJECT_ID/airflow:latest
 ```
-Note: you don't need to create anything, just push the image to your GCP project.
+Note: You don't need to create anything, just push the image to your GCP project.
 
 ### Create a Kubernetes ConfigMap to store all the environment variables
 
