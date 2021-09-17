@@ -2,7 +2,7 @@
 
 Simple Apache Airflow `1.10.9` solution using [Kubernetes Executor][1]. There are many repositories to a deployment solution with custom helm charts, but in this repo I am only going to use a few yaml files. 
 
-This guide is using Google Cloud Platform (GCP) as a cloud provider. Do not hesitate to open a PR to implemente a guide for other cloud providers. 
+This guide is using Google Cloud Platform (GCP) as a cloud provider. Do not hesitate to open a PR to implement a guide for other cloud providers. 
 
 Note: we do not provide any information about setting up a Kubernetes cluster (GKE), and a MySQL or PostgreSQL database. Reach out if you need help!
 
